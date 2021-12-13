@@ -351,8 +351,7 @@ class Atk
 
     public function registerModule($moduleClass)
     {
-        $reflection = new \ReflectionClass($moduleClass);
-        $name = $reflection->getStaticPropertyValue('module');
+        $name = $moduleClass::getModuleName();
         $this->g_modules[$name] = $moduleClass;
 
         if (!self::isModule($name)) {
