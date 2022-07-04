@@ -14,7 +14,7 @@
     "php": ">=7.2",
     "fightbulc/moment": "^1.13",
     "smarty/smarty": "^3.1",
-    "vlucas/phpdotenv": "^3.3",
+    "vlucas/phpdotenv": "^v5.4.1",
     "ext-zlib": "*",
     "ext-json": "*",
     "ext-simplexml": "*",

@@ -42,7 +42,7 @@ class Atk
         $this->environment = $environment;
 
         $loader = null;
-        $isBaseDirALoader = 'Dotenv\Loader' === (is_object($basedir) and get_class($basedir));
+        $isBaseDirALoader = 'Dotenv\Loader' == (is_object($basedir) and get_class($basedir));
 
         if (!$isBaseDirALoader) { //If loader is not provided as input
             if (file_exists($basedir . ".env")) { //If an env file is provided in the basedir
