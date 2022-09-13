@@ -9,23 +9,21 @@ use Sintattica\Atk\Db\Query;
 
 class NestedDateAttribute extends DateAttribute
 {
+
+    use NestableField;
+
+    use NestedSearchable;
+
+    use NestedOrderable;
+
+
     public function __construct($name, $flags = 0, $format_edit = '', $format_view = '', $min = 0, $max = 0)
     {
         $this->setIsNestedAttribute(true);
         parent::__construct($name, $flags, $format_edit, $format_view, $min, $max);
     }
 
-    public function getOrderByStatement($extra = [], $table = '', $direction = 'ASC')
-    {
-        $json_query = NestedAttribute::getOrderByStatementStatic($this, $extra, $table, $direction);
-        if ($json_query) {
-            return $json_query;
-        }
-
-        return parent::getOrderByStatement($extra, $table, $direction);
-    }
-
-    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = '')
+    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = ''): string
     {
         if (!$this->getOwnerInstance()->isNestedAttribute($this->fieldName())) {
             return parent::getSearchCondition($query, $table, $value, $searchmode, $fieldname);
@@ -33,9 +31,5 @@ class NestedDateAttribute extends DateAttribute
         return parent::getSearchCondition($query, $table, $value, $searchmode, $this->buildSQLSearchValue($table));
     }
 
-    protected function buildSQLSearchValue($table)
-    {
-        return "JSON_UNQUOTE(" . NestedAttribute::buildJSONExtractValue($this, $table) . ")";
-    }
 
 }

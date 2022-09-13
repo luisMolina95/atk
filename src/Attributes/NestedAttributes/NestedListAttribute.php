@@ -10,34 +10,31 @@ use Sintattica\Atk\Db\Query;
 
 class NestedListAttribute extends ListAttribute
 {
-    public function __construct($name, $flags = 0, $optionArray, $valueArray = null)
+
+    use NestableField;
+    use NestedOrderable;
+
+
+    public function __construct($name, $flags = 0, $optionArray = [], $valueArray = null)
     {
         $this->setIsNestedAttribute(true);
         parent::__construct($name, $flags, $optionArray, $valueArray);
     }
 
-    public function getOrderByStatement($extra = [], $table = '', $direction = 'ASC')
-    {
-        $json_query = NestedAttribute::getOrderByStatementStatic($this, $extra, $table, $direction);
-        if ($json_query) {
-            return $json_query;
-        }
 
-        return parent::getOrderByStatement($extra, $table, $direction);
-    }
-
-    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = '')
+    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = ''): string
     {
         if (!$this->getOwnerInstance()->isNestedAttribute($this->fieldName())) {
             return parent::getSearchCondition($query, $table, $value, $searchmode, $fieldname);
         }
+
         // We only support 'exact' matches.
         // But you can select more than one value, which we search using the IN() statement,
         // which should work in any ansi compatible database.
         $searchcondition = '';
         if (is_array($value) && Tools::count($value) > 0 && $value[0] != '') { // This last condition is for when the user selected the 'search all' option, in which case, we don't add conditions at all.
 
-            $fields_sql = NestedAttribute::buildJSONExtractValue($this, $table);
+            $fields_sql = $this->getQueryForJsonField($this, $table);
 
             if (Tools::count($value) == 1 && $value[0] != '') { // exactly one value
                 if ($value[0] == '__NONE__') {

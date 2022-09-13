@@ -4,12 +4,15 @@
 namespace Sintattica\Atk\Attributes\NestedAttributes;
 
 
-use App\Atk\Modules\App\Attributes\MultiListAttribute;
+use Sintattica\Atk\Attributes\MultiListAttribute;
 use Sintattica\Atk\Core\Tools;
 use Sintattica\Atk\Db\Query;
 
 class NestedMultiListAttribute extends MultiListAttribute
 {
+
+    use NestableField;
+    use NestedOrderable;
 
     function __construct($name, $flags, $optionArray, $valueArray = null)
     {
@@ -27,7 +30,7 @@ class NestedMultiListAttribute extends MultiListAttribute
      * @param string $fieldname
      * @return string
      */
-    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = '')
+    public function getSearchCondition(Query $query, $table, $value, $searchmode, $fieldname = ''): string
     {
         if (!$this->getOwnerInstance()->isNestedAttribute($this->fieldName())) {
             return parent::getSearchCondition($query, $table, $value, $searchmode, $fieldname);
@@ -36,7 +39,7 @@ class NestedMultiListAttribute extends MultiListAttribute
         // Multiselect attribute has only 1 searchmode, and that is substring.
 
         $searchconditions = array();
-        $field_sql = NestedAttribute::buildJSONExtractValue($this, $table);
+        $field_sql = $this->getQueryForJsonField($this, $table);
 
         if (is_array($value) && $value[0] != "" && count($value) > 0) {
             // include i separatori nel valore da ricercare, così da rendere sicura la ricerca (posto che il separatore NON sia usato nei valori)
